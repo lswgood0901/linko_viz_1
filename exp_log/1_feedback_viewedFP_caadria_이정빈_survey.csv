@@ -1,4 +1,4 @@
-time,recluster_cnt,incluster_cnt,floorplan_name,event,link,mode,priority
+,time,recluster_cnt,incluster_cnt,floorplan_name,event,link,mode,priority
 0,2021-12-03 11:06:35.315334,0,0,01_21_A0121140030001000049z,0,[],a,a
 1,2021-12-03 11:06:41.465479,0,0,01_19_A0119158050001000055z,0,[],a,a
 2,2021-12-03 11:06:48.613977,0,0,01_04_A0104157040005400047z,0,[],a,a

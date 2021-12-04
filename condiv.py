@@ -273,20 +273,21 @@ def appending_currentstate(anylinks):
 
 
 def mode_to_number(x):
-    y = 2
-
-    if x == "'con'":
-        y = -1
-    elif x == "'div'":
+    y = "wrong"
+    if x == "'con'" or x == "con" or x =="' con'" or x =="  'con'" or x == " 'con'":
         y = 1
-    elif x == "'no'":
+    elif x == "' div'" or x =="'div'" or x =="div" or x =="  'div'" or x == " 'div'":
+        y = -1
+    elif x == "' no'" or x == "'no'" or x == "no" or x =="  'no'" or x == " 'no'":
         y = 0
+    else:
+        print("wrong text:",x)
     return y
 
 
 # seungwon test
 test_csv = pd.read_csv(
-    'exp_log/1_feedback_viewedFP_caadria_이정빈_survey.csv')
+    'exp_log/1_feedback_viewedFP_caadria_홍서진_survey.csv')
 fpname = test_csv['floorplan_name']
 eventname = test_csv['event']
 
@@ -318,6 +319,7 @@ rl_mode = []
 rc_mode = []
 rs_mode = []
 rsl_mode = []
+mean_mode = []
 rn_priority = []
 fs_priority = []
 rl_priority = []
@@ -325,12 +327,12 @@ rc_priority = []
 rs_priority = []
 rsl_priority = []
 for i in user_priority:
-    rn_priority.append(i[5])
-    fs_priority.append(i[0])
-    rl_priority.append(i[1])
-    rc_priority.append(i[4])
-    rs_priority.append(i[2])
-    rsl_priority.append(i[3])
+    rn_priority.append(int(i[5]))
+    fs_priority.append(int(i[0]))
+    rl_priority.append(int(i[1]))
+    rc_priority.append(int(i[4]))
+    rs_priority.append(int(i[2]))
+    rsl_priority.append(int(i[3]))
 index = 0
 for i in user_mode:
     x = mode_to_number(i[5])
@@ -351,6 +353,8 @@ for i in user_mode:
     x = mode_to_number(i[3])
     x = x * (7 - int(user_priority[index][3]))
     rsl_mode.append(x)
+    x = mode_to_number(i[6])
+    mean_mode.append(x)
     index += 1
 index = 0
 all_mode = [rn_mode, fs_mode, rl_mode, rc_mode, rs_mode, rsl_mode]
@@ -437,19 +441,60 @@ for i in rsl_cs:
 for i in rc_cs:
     back_rccs.append(i[0])
 
-all_back = [back_rncs, back_fscs, back_lccs, back_rscs, back_rslcs, back_rccs]
-all_back_num = [back_rn_num, back_fs_num, back_lc_num, back_rs_num, back_rsl_num, back_rc_num]
+all_back = [back_rncs, back_fscs, back_lccs, back_rccs, back_rscs, back_rslcs]
+# all_back_num = [back_rn_num, back_fs_num, back_lc_num, back_rc_num, back_rs_num, back_rsl_num]
 mean_index = 0
 mean_div = []
 mean_conv = []
 
 for i in range(len(rs_cs)):
-    mean_array_back = [back_rncs[mean_index], back_fscs[mean_index], back_lccs[mean_index], back_rscs[mean_index], back_rslcs[mean_index], back_rccs[mean_index]]
-    mean_conv.append(np.mean(mean_array_back))
-    mean_index += 1
-print(mean_div, mean_conv)
-x_axis = range(0, len(rs_cs))
+    if eventname[i] == 1:
+        mean_array_back = [back_rncs[i] * rn_priority[mean_index], back_fscs[i]* fs_priority[mean_index], back_lccs[i]* rl_priority[mean_index]
+            , back_rccs[i]* rc_priority[mean_index], back_rscs[i]* rs_priority[mean_index], back_rslcs[i]* rsl_priority[mean_index]]
+        mean_conv.append(sum(mean_array_back)/21)
+        mean_index += 1
+# 정답률
+index = 0
+correct_rate = []
+correct_rates = []
 
+for i in all_back:
+    correct_list = []
+    mode_index = 0
+    for l in range(len(i)):
+        if selected_data[l] == 1:
+            if all_mode[index][mode_index] > 0 and l > 0.5:
+                correct_list.append(1)
+            elif all_mode[index][mode_index] < 0 and l < 0.5:
+                correct_list.append(1)
+            elif all_mode[index][mode_index] == 0 or l == 0.5:
+                correct_list.append(0)
+            else:
+                correct_list.append(-1)
+            mode_index += 1
+    correct_rate.append(correct_list)
+    index += 1
+index = 0
+correct_list = []
+for i in mean_conv:
+    if i > 0.5 and mean_mode[index] > 0:
+        correct_list.append(1)
+    elif i < 0.5 and mean_mode[index] < 0:
+        correct_list.append(1)
+    elif i == 0.5 or mean_mode[index] == 0:
+        correct_list.append(0)
+    index += 1
+correct_rate.append(correct_list)
+for i in correct_rate:
+    x = i.count(1)
+    y = i.count(0)
+    z = x/(10-y)
+    correct_rates.append(z)
+print(correct_rates)
+# 정답률
+
+
+x_axis = range(0, len(rs_cs))
 name = ['NR - entropy', 'FS - entropy', 'RL - entropy', 'RC - ntropy', 'RS - entropy', 'RSL - entropy',
         'NR - linkratio', 'FS - linkratio', 'RL - linkratio', 'RC - linkratio', 'RS - linkratio', 'RSL - linkratio',
         'NR - density', 'FS - density', 'RL - density', 'RC - density', 'RS - density', 'RSL - density']
@@ -461,13 +506,19 @@ plt.rcParams['axes.grid'] = True
 plt.subplots_adjust(left=0.05, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.55)
 
 index = 0
-print(all_mode)
 for i in all_back:
-    plt.subplot(1, 7, index + 1)
+    plt.subplot(6, 1, index + 1)
     scatter_index = 0
+    mode_index = 0
     for l in i:
         if selected_data[scatter_index] == 1:
-            plt.scatter(scatter_index, l, s=10, c='r')
+            if all_mode[index][mode_index] > 0:
+                plt.scatter(scatter_index, l, s=50, c='r')
+            elif all_mode[index][mode_index] < 0:
+                plt.scatter(scatter_index, l, s=50, c='g')
+            elif all_mode[index][mode_index] == 0:
+                plt.scatter(scatter_index, l, s=50, c='black')
+            mode_index += 1
         scatter_index += 1
     plt.plot(x_axis, i)
     plt.title(name[index])
