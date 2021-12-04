@@ -270,19 +270,20 @@ def appending_currentstate(anylinks):
     return fore_ratio, back_ratio
 
 def mode_to_number(x):
-    y = 2
-
-    if x == "con":
-        y = -1
-    elif x == "div":
+    y = "wrong"
+    if x == "'con'" or x == "con" or x =="' con'" or x =="  'con'" or x == " 'con'":
         y = 1
-    elif x == "no":
+    elif x == "' div'" or x =="'div'" or x =="div" or x =="  'div'" or x == " 'div'":
+        y = -1
+    elif x == "' no'" or x == "'no'" or x == "no" or x =="  'no'" or x == " 'no'":
         y = 0
+    else:
+        print("wrong text:",x)
     return y
 
 # seungwon test
 test_csv = pd.read_csv(
-    'exp_log/1_feedback_viewedFP_caadria_이정빈_survey.csv')
+    'exp_log/1_feedback_viewedFP_caadria_홍서진_survey.csv')
 fpname = test_csv['floorplan_name']
 eventname = test_csv['event']
 user_mode_df = test_csv['mode']
@@ -329,22 +330,22 @@ for i in user_priority:
 index = 0
 for i in user_mode:
     x = mode_to_number(i[5])
-    x = x * (7-int(user_priority[index][5]))
+    x = x * (1/6)* (7-int(user_priority[index][5]))
     rn_mode.append(x)
     x = mode_to_number(i[0])
-    x = x * (7-int(user_priority[index][0]))
+    x = x * (1/6)* (7-int(user_priority[index][0]))
     fs_mode.append(x)
     x = mode_to_number(i[1])
-    x = x * (7 - int(user_priority[index][1]))
+    x = x * (1/6) * (7 - int(user_priority[index][1]))
     rl_mode.append(x)
     x = mode_to_number(i[4])
-    x = x * (7 - int(user_priority[index][4]))
+    x = x * (1/6) * (7 - int(user_priority[index][4]))
     rc_mode.append(x)
     x = mode_to_number(i[2])
-    x = x * (7 - int(user_priority[index][2]))
+    x = x * (1/6) * (7 - int(user_priority[index][2]))
     rs_mode.append(x)
     x = mode_to_number(i[3])
-    x = x * (7 - int(user_priority[index][3]))
+    x = x * (1/6)* (7 - int(user_priority[index][3]))
     rsl_mode.append(x)
     index += 1
 index = 0
@@ -516,19 +517,20 @@ for i in range(6):
 all_correct_ratio = []
 
 
-
 for i in all_correct:
     x = i.count(1)/10
     all_correct_ratio.append(x)
-# print(all_correct_ratio)
 all_density = [nr_density,fs_density,rl_density,rc_density,rs_density, rsl_density]
 corr_list = [0,0,0,0,0,0]
 for i in range(6):
-    corr_list[i] = [all_entropy_dif[i], all_mode[i]]
+    corr_list[i] = [all_density[i], all_mode[i]]
     df = pd.DataFrame(corr_list[i]).T
     corr = df.corr(method='pearson')
     corr_list[i] = corr
+    print(corr_list[i][0][1])
+
 # print(corr_list)
+print(all_mode)
 name = ['NR - entropy', 'FS - entropy', 'RL - entropy', 'RC - ntropy', 'RS - entropy', 'RSL - entropy',
             'NR - linkratio', 'FS - linkratio', 'RL - linkratio', 'RC - linkratio', 'RS - linkratio', 'RSL - linkratio',
             'NR - density', 'FS - density', 'RL - density', 'RC - density', 'RS - density', 'RSL - density']
@@ -568,10 +570,11 @@ for i in all_density:
     plt.title(name[index])
     index += 1
 index = index - 6
-for i in all_priority:
+for i in all_mode:
     plt.subplot(3, 6, index + 1)
     plt.plot(x_axis, i, 'y')
     plt.title(name[index])
     index += 1
+
 plt.show()
 

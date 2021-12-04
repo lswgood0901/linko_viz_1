@@ -286,7 +286,7 @@ def mode_to_number(x):
 
 # seungwon test
 test_csv = pd.read_csv(
-    'exp_log/1_feedback_viewedFP_caadria_홍서진_survey.csv')
+    'exp_log/1_feedback_viewedFP_caadria_유미선_survey.csv')
 fpname = test_csv['floorplan_name']
 eventname = test_csv['event']
 
@@ -492,11 +492,66 @@ for i in correct_rate:
     correct_rates.append(z)
 # 정답률
 
+# 1순위 정답률
+first_x = 0
+second_x = 0
+third_x = 0
+fourth_x = 0
+fifth_x = 0
+sixth_x = 0
+first_y = 10
+second_y = 10
+third_y = 10
+fourth_y = 10
+fifth_y = 10
+sixth_y = 10
 
+for i in range(6):
+    c_index = 0
+    for l in range(len(all_back[i])):
+        if selected_data[l] == 1:
+            if all_priority[i][c_index] == 1:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    first_x += 1
+                elif all_back[i][l] == 0.5:
+                    first_y -= 1
+            if all_priority[i][c_index] == 2:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    second_x += 1
+                elif all_back[i][l] == 0.5:
+                    second_y -= 1
+            if all_priority[i][c_index] == 3:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    third_x += 1
+                elif all_back[i][l] == 0.5:
+                    third_y -= 1
+            if all_priority[i][c_index] == 4:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    fourth_x += 1
+                elif all_back[i][l] == 0.5:
+                    fourth_y -= 1
+            if all_priority[i][c_index] == 5:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    fifth_x += 1
+                elif all_back[i][l] == 0.5:
+                    fifth_y -= 1
+            if all_priority[i][c_index] == 6:
+                if (all_back[i][l] > 0.5 and all_mode[i][c_index] > 0) or (all_back[i][l] < 0.5 and all_mode[i][c_index] < 0):
+                    sixth_x += 1
+                elif all_back[i][l]  == 0.5:
+                    sixth_y -= 1
+            c_index += 1
+first_rate = first_x/first_y
+second_rate = second_x/second_y
+third_rate = third_x/third_y
+fourth_rate = fourth_x/fourth_y
+fifth_rate = fifth_x/fifth_y
+sixth_rate = sixth_x/sixth_y
+print(correct_rates)
+print(first_rate,second_rate,third_rate,fourth_rate,fifth_rate,sixth_rate)
+# 1순위 정답률
 x_axis = range(0, len(rs_cs))
-name = ['NR - entropy', 'FS - entropy', 'RL - entropy', 'RC - ntropy', 'RS - entropy', 'RSL - entropy',
-        'NR - linkratio', 'FS - linkratio', 'RL - linkratio', 'RC - linkratio', 'RS - linkratio', 'RSL - linkratio',
-        'NR - density', 'FS - density', 'RL - density', 'RC - density', 'RS - density', 'RSL - density']
+name = ['NR - Convergence', 'FS - Convergence', 'RL - Convergence', 'RC - Convergence', 'RS - Convergence', 'RSL - Convergence', 'Mean - Convergence']
 plt.rc("font", size=8)
 plt.rc('ytick', labelsize=5)
 plt.rc('xtick', labelsize=5)
@@ -522,9 +577,17 @@ for i in all_back:
     plt.plot(x_axis, i)
     plt.title(name[index])
     index += 1
-# for i in mean_conv:
-#     plt.subplot(7, 1, 7)
-#     mode_index = 0
-#     if selected_data[mode_index] == 1:
+for i in range(len(mean_conv)):
+    plt.subplot(7, 1, 7)
+    mode_index = 0
+    if mean_mode[i] > 0:
+        plt.scatter(i, mean_conv[i], s=50, c='r')
+    elif mean_mode[i] < 0:
+        plt.scatter(i, mean_conv[i], s=50, c='g')
+    elif mean_mode[i] == 0:
+        plt.scatter(i, mean_conv[i], s=50, c='black')
+plt.plot(range(len(mean_conv)), mean_conv)
+plt.title(name[index])
+
 plt.show()
 
