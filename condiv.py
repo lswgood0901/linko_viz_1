@@ -1,4 +1,3 @@
-import cv2
 import csv
 import numpy as np
 import pandas as pd
@@ -474,6 +473,7 @@ for i in all_back:
             mode_index += 1
     correct_rate.append(correct_list)
     index += 1
+
 index = 0
 correct_list = []
 for i in mean_conv:
@@ -490,7 +490,6 @@ for i in correct_rate:
     y = i.count(0)
     z = x/(10-y)
     correct_rates.append(z)
-print(correct_rates)
 # 정답률
 
 
@@ -507,7 +506,7 @@ plt.subplots_adjust(left=0.05, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hsp
 
 index = 0
 for i in all_back:
-    plt.subplot(6, 1, index + 1)
+    plt.subplot(7, 1, index + 1)
     scatter_index = 0
     mode_index = 0
     for l in i:
@@ -523,6 +522,9 @@ for i in all_back:
     plt.plot(x_axis, i)
     plt.title(name[index])
     index += 1
-
+# for i in mean_conv:
+#     plt.subplot(7, 1, 7)
+#     mode_index = 0
+#     if selected_data[mode_index] == 1:
 plt.show()
 
