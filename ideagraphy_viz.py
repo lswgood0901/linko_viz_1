@@ -201,7 +201,7 @@ def each_links_number():
             elif link.type == "roomshape":
                 linktype = "rs"
             else:
-                "wrong keyword"
+                print("wrong keyword")
             # foreLink_pos[item.left] += 1
             # backLink_pos[item.right-1] += 1
             link_all.append([linktype, link.left, link.right])
@@ -260,10 +260,25 @@ def mode_to_number(x):
     else:
         print("wrong text:",x)
     return y
-
+def is_ideagraphy_type(x):
+    y = "nan"
+    if x == 0:
+        y = "nr"
+    elif x == 1:
+        y = "fs"
+    elif x == 2:
+        y = "rl"
+    elif x == 3:
+        y = "rc"
+    elif x == 4:
+        y = "rs"
+    elif x == 5:
+        y = "rsl"
+    return y
 # seungwon test
+name ='홍서진'
 test_csv = pd.read_csv(
-    'exp_log/1_feedback_viewedFP_caadria_이민정_survey.csv')
+    'exp_log/1_feedback_viewedFP_caadria_'+name+'_survey.csv')
 fpname = test_csv['floorplan_name']
 eventname = test_csv['event']
 user_mode_df = test_csv['mode']
@@ -341,7 +356,6 @@ for i in range(10):
     for l in range(temp_fp[i],temp_fp[i+1]+1):
         temp_array.append(temp2_fp[l])
     select_fp.append(temp_array)
-
 # 링크 다시 생성
 rnlinks = []
 fslinks = []
@@ -352,8 +366,12 @@ rclinks = []
 all_links = []
 all_count_fore = []
 all_count_back = []
+all_sum_fore = []
+all_sum_back = []
 final_fore_sum = []
 final_back_sum = []
+final_fore_entropy = []
+final_back_entropy = []
 for i in select_fp:
     index = 0
     data_length = len(i)
@@ -369,9 +387,11 @@ for i in select_fp:
             fore_rsl_num, back_rsl_num = count_linknumber(roomshapelayoutLinks, data_length)
             all_count_fore.append([fore_rn_num[0], fore_fs_num[0], fore_lc_num[0], fore_rc_num[0], fore_rs_num[0], fore_rsl_num[0]])
             all_count_back.append([back_rn_num[-1], back_fs_num[-1], back_lc_num[-1], back_rc_num[-1], back_rs_num[-1], back_rsl_num[-1]])
+            all_sum_fore.append([sum(fore_rn_num)/data_length, sum(fore_fs_num)/data_length, sum(fore_lc_num)/data_length,
+                                 sum(fore_rc_num)/data_length, sum(fore_rs_num)/data_length, sum(fore_rsl_num)/data_length])
+            final_fore_entropy.append(all_fore_entropy)
             all_links.append(link_all)
         index += 1
-
     user_designMove_list = []
     numberLinks = []
     overallshapeLinks = []
@@ -381,40 +401,69 @@ for i in select_fp:
     roomshapelayoutLinks = []
 
 all_count_fore = list(map(list, zip(*all_count_fore)))
+all_sum_fore = list(map(list, zip(*all_sum_fore)))
 all_count_back = list(map(list, zip(*all_count_back)))
-# print("a", all_links)
-# print("b", all_count_fore)
-# print("c", all_count_back)
-# print("d", all_mode)
-index=0
-# for process in all_links:
-#     plt.subplot(6, 1, index + 1)
-#     for move in process:
-#         scatter_x_position = (process[0][1] + process[0][2])/2
-#         scatter_y_position = process[0][2] - process[0][1]
+final_fore_entropy = list(map(list, zip(*final_fore_entropy)))
 
-x_axis = range(10)
-name = ['NR - designprocess', 'FS - designprocess', 'RL - designprocess', 'RC - designprocess', 'RS - designprocess', 'RSL - designprocess', 'Mean - designprocess']
-plt.rc("font", size=8)
-plt.rc('ytick', labelsize=5)
-plt.rc('xtick', labelsize=5)
-plt.rcParams["figure.figsize"] = (14, 7.5)
-# plt.rcParams['axes.grid'] = True
-plt.subplots_adjust(left=0.05, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.55)
-index=0
-for index in range(6):
-    plt.subplot(6, 1, index + 1)
-    for i in range(10):
-        if all_mode[index][i] == 1:
-            plt.scatter(i, 0, s=20, c='r')
-        elif all_mode[index][i] == -1:
-            plt.scatter(i, 0, s=20, c='b')
-        elif all_mode[index][i] == 0:
-            plt.scatter(i, 0, s=20, c='black')
-    plt.plot(x_axis, all_count_fore[index], label='Fore', c='b')
-    plt.plot(x_axis, all_count_back[index], label='Back', c='r')
-    plt.title(name[index])
-plt.legend()
+#result
+for i in range(6):
+    for l in range(10):
+        if int(all_priority[i][l]) == 1 and all_mode[i][l] == -1:
+            ideagraphy_type = is_ideagraphy_type(i)
+            priority = int(all_priority[i][l])
+            forelinks_number = all_sum_fore[i][l]
+            fore_entropy = final_fore_entropy[i][l]
+            log_df = pd.DataFrame(
+                columns=['name', 'ideagraphy_type', 'select_point', 'priority', 'forelinks_number(density)', 'forelinks_entropy',
+                         'criteria']
+            )
+            # if not os.path.exists('log/' + name + '.csv'):
+            #     log_df.to_csv('log/' + name + '.csv', index=False, mode='w', encoding='utf-8-sig')
+            new_log = {'name': name, 'ideagraphy_type': ideagraphy_type, 'select_point':l, 'priority': priority,
+                       'forelinks_number(density)': forelinks_number,
+                       'forelinks_entropy': fore_entropy, 'criteria':'nan'}
+            log_df = log_df.append(new_log, ignore_index=True)
+            log_df.to_csv('log/div_result.csv', index=False, mode='a', encoding='utf-8-sig', header=False)
+        elif int(all_priority[i][l]) == 2 and all_mode[i][l] == -1:
+            ideagraphy_type = is_ideagraphy_type(i)
+            priority = int(all_priority[i][l])
+            forelinks_number = all_sum_fore[i][l]
+            fore_entropy = final_fore_entropy[i][l]
+            log_df = pd.DataFrame(
+                columns=['name', 'ideagraphy_type', 'select_point', 'priority', 'forelinks_number(density)', 'forelinks_entropy',
+                         'criteria']
+            )
+            # if not os.path.exists('log/' + name + '.csv'):
+            #     log_df.to_csv('log/' + name + '.csv', index=False, mode='w', encoding='utf-8-sig')
+            new_log = {'name': name, 'ideagraphy_type': ideagraphy_type, 'select_point':l, 'priority': priority,
+                       'forelinks_number(density)': forelinks_number,
+                       'forelinks_entropy': fore_entropy, 'criteria':'nan'}
+            log_df = log_df.append(new_log, ignore_index=True)
+            log_df.to_csv('log/div_result.csv', index=False, mode='a', encoding='utf-8-sig', header=False)
+#result
+
+# x_axis = range(10)
+# name = ['NR - designprocess', 'FS - designprocess', 'RL - designprocess', 'RC - designprocess', 'RS - designprocess', 'RSL - designprocess', 'Mean - designprocess']
+# plt.rc("font", size=8)
+# plt.rc('ytick', labelsize=5)
+# plt.rc('xtick', labelsize=5)
+# plt.rcParams["figure.figsize"] = (14, 7.5)
+# # plt.rcParams['axes.grid'] = True
+# plt.subplots_adjust(left=0.05, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.55)
+# index=0
+# for index in range(6):
+#     plt.subplot(6, 1, index + 1)
+#     for i in range(10):
+#         if all_mode[index][i] == 1:
+#             plt.scatter(i, 0, s=20, c='r')
+#         elif all_mode[index][i] == -1:
+#             plt.scatter(i, 0, s=20, c='b')
+#         elif all_mode[index][i] == 0:
+#             plt.scatter(i, 0, s=20, c='black')
+#     plt.plot(x_axis, all_count_fore[index], label='Fore', c='b')
+#     plt.plot(x_axis, all_count_back[index], label='Back', c='r')
+#     plt.title(name[index])
+# plt.legend()
 # plt.show()
-plt.savefig('Figure_condiv/이민정/이민정_designprocess.png')
+# plt.savefig('Figure_condiv/이정빈/이정빈_designprocess.png')
 

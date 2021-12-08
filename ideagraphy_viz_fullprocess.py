@@ -406,11 +406,9 @@ for i in range(len(fpname)):
         select_index.append(i)
 all_linko = [rnlinks[0], fslinks[0], lclinks[0], rclinks[0], rslinks[0], rsllinks[0]]
 index=0
-# for process in all_links:
-#     plt.subplot(6, 1, index + 1)
-#     for move in process:
-#         scatter_x_position = (process[0][1] + process[0][2])/2
-#         scatter_y_position = process[0][2] - process[0][1]
+
+print(rclinks[0])
+
 x_axis = range(len(select_fp))
 name = ['NR_Ideagraphy', 'FS_Ideagraphy', 'RL_Ideagraphy', 'RC_Ideagraphy', 'RS_Ideagraphy', 'RSL_Ideagraphy', 'Mean_Ideagraphy']
 plt.rc("font", size=8)
@@ -419,13 +417,14 @@ plt.rc('xtick', labelsize=5)
 plt.rcParams["figure.figsize"] = (14, 7.5)
 # plt.rcParams['axes.grid'] = True
 plt.subplots_adjust(left=0.05, bottom=0.1, right=0.95, top=0.95, wspace=0.2, hspace=0.55)
+
 index=0
 for linko in range(6):
     for links in all_linko[linko]:
         x = (links[0] + links[1])/2
         y = links[1] - links[0]
         plt.plot([links[0], x], [0,y], color="grey", linewidth='0.5')
-        plt.plot([x,links[1]],[y,0], color="grey", linewidth='0.5')
+        plt.plot([links[1],x],[0,y], color="grey", linewidth='0.5')
         plt.scatter(x, y, s=20, c='g')
     index = 0
     for i in range(len(select_index)):
@@ -451,7 +450,7 @@ for linko in range(6):
                 plt.scatter(i, -1, s=20, c='black')
             index += 1
     plt.title(name[linko])
-
-    plt.savefig('Figure_condiv/이민정/이민정_'+name[linko]+'.png')
+    plt.show()
+    # plt.savefig('Figure_condiv/유미선/유미선_'+name[linko]+'_1.png')
 
 
