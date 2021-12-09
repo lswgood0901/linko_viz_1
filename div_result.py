@@ -14,7 +14,7 @@ import bisect
 import scipy.stats
 
 test_csv = pd.read_csv(
-    'log/div_result.csv')
+    'log/div_result_1.csv')
 
 density = test_csv['forelinks_number(density)']
 ideagraphy_type = test_csv['ideagraphy_type']
@@ -22,25 +22,27 @@ criteria = test_csv['criteria']
 priority = test_csv['priority']
 
 macro = []
-macro_two = []
 micro = []
-micro_two = []
 index = 0
 for i in priority:
     if i == 1 and criteria[index] == 1:
-        macro.append(density[index])
-    elif i == 1 and criteria[index] == 0:
         micro.append(density[index])
+    elif i == 1 and criteria[index] == 0:
+        macro.append(density[index])
     index += 1
 index = 0
-for i in priority:
-    if i == 2 and criteria[index] == 1:
-        macro_two.append(density[index])
-    elif i == 2 and criteria[index] == 0:
-        micro_two.append(density[index])
-    index += 1
-print(len(macro), len(micro))
-print(np.mean(macro),np.mean(micro))
+std_macro = np.std(macro)
+std_micro = np.std(micro)
 
 
+
+
+
+
+
+# 전체평균
+test_stat, p_val = scipy.stats.kstest(macro, 'norm', args=(np.mean(macro), np.var(macro)**0.5))
+test_stat1, p_val1 = scipy.stats.kstest(micro, 'norm', args=(np.var(micro), np.var(micro)**0.5))
+print("p_val:",p_val, "p_val1:",p_val1)
+print(scipy.stats.ttest_ind(macro, micro, equal_var=False))
 

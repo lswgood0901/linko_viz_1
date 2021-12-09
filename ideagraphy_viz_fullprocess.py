@@ -275,7 +275,7 @@ def mode_to_number(x):
 
 # seungwon test
 test_csv = pd.read_csv(
-    'exp_log/1_feedback_viewedFP_caadria_이민정_survey.csv')
+    'exp_log/1_feedback_viewedFP_caadria_이채민_survey.csv')
 fpname = test_csv['floorplan_name']
 eventname = test_csv['event']
 user_mode_df = test_csv['mode']

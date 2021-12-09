@@ -276,7 +276,7 @@ def is_ideagraphy_type(x):
         y = "rsl"
     return y
 # seungwon test
-name ='홍서진'
+name ='권순태'
 test_csv = pd.read_csv(
     'exp_log/1_feedback_viewedFP_caadria_'+name+'_survey.csv')
 fpname = test_csv['floorplan_name']
@@ -408,7 +408,7 @@ final_fore_entropy = list(map(list, zip(*final_fore_entropy)))
 #result
 for i in range(6):
     for l in range(10):
-        if int(all_priority[i][l]) == 1 and all_mode[i][l] == -1:
+        if int(all_priority[i][l]) == 1:
             ideagraphy_type = is_ideagraphy_type(i)
             priority = int(all_priority[i][l])
             forelinks_number = all_sum_fore[i][l]
@@ -423,23 +423,7 @@ for i in range(6):
                        'forelinks_number(density)': forelinks_number,
                        'forelinks_entropy': fore_entropy, 'criteria':'nan'}
             log_df = log_df.append(new_log, ignore_index=True)
-            log_df.to_csv('log/div_result.csv', index=False, mode='a', encoding='utf-8-sig', header=False)
-        elif int(all_priority[i][l]) == 2 and all_mode[i][l] == -1:
-            ideagraphy_type = is_ideagraphy_type(i)
-            priority = int(all_priority[i][l])
-            forelinks_number = all_sum_fore[i][l]
-            fore_entropy = final_fore_entropy[i][l]
-            log_df = pd.DataFrame(
-                columns=['name', 'ideagraphy_type', 'select_point', 'priority', 'forelinks_number(density)', 'forelinks_entropy',
-                         'criteria']
-            )
-            # if not os.path.exists('log/' + name + '.csv'):
-            #     log_df.to_csv('log/' + name + '.csv', index=False, mode='w', encoding='utf-8-sig')
-            new_log = {'name': name, 'ideagraphy_type': ideagraphy_type, 'select_point':l, 'priority': priority,
-                       'forelinks_number(density)': forelinks_number,
-                       'forelinks_entropy': fore_entropy, 'criteria':'nan'}
-            log_df = log_df.append(new_log, ignore_index=True)
-            log_df.to_csv('log/div_result.csv', index=False, mode='a', encoding='utf-8-sig', header=False)
+            log_df.to_csv('log/div_result_1.csv', index=False, mode='a', encoding='utf-8-sig', header=False)
 #result
 
 # x_axis = range(10)
